@@ -15,8 +15,7 @@ import { GlobalContext } from "../GlobalContext";
 
 const Landing = props => {
 
-	const [textOCR, setTextOCR] = useState();
-	const [plate, setPlate, isLoading, setIsLoading, isError, setIsError] = useContext(GlobalContext);
+	const [plate, setPlate, isLoading, setIsLoading, isError, setIsError, header, setHeader] = useContext(GlobalContext);
 
 	const allowCam = async () => {
 		const result = await Permissions.askAsync(Permissions.CAMERA)
@@ -47,6 +46,10 @@ const Landing = props => {
 			return;
 		}
 		const image = await ImagePicker.launchCameraAsync();
+		if (image.cancelled) {
+			props.navigation.navigate('LandingScreen');
+			return;
+		}
 		const imageFormat = await ImageManipulator.manipulateAsync(image.uri, [{ resize: {width:1000} }], {compress: 1});
 		const imageName = imageFormat.uri.split('/').pop();
 		const imagePath = FileSystem.documentDirectory + imageName;
@@ -128,15 +131,19 @@ const Landing = props => {
 
 	return (
 		<View style={styles.container}>
+
+			<View style={styles.header}>
+				<Text style={styles.headerText}>{header}</Text>
+			</View>
 			
 			<View style={styles.tileCam}>
-				<Image source={require('../assets/camera.png')} style={{width: 100,height: 100}} />
+				<Image source={require('../assets/camera.png')} style={{width: 300,height: 180}} />
 				<Button title="Plaque" color="#e2e5ec" onPress={launchCam} />
 			</View>
 			
 			<View style={styles.tileSearch}>
-				<Image source={require('../assets/search.png')} style={{width: 100,height: 100}} />
-				<Button title="Rechercher" color="#e2e5ec"  onPress={() => props.navigation.navigate('SearchScreen')} />
+				<Image source={require('../assets/search.png')} style={{width: 300,height: 150}} />
+				<Button title="Rechercher" color="#e2e5ec" onPress={() => props.navigation.navigate('SearchScreen')} />
 			</View>
 		</View>
 	);
@@ -164,7 +171,22 @@ const styles = StyleSheet.create({
 		backgroundColor: "#e2e5ec",
 		justifyContent: "space-around",
 		alignItems: "center"
-	}
+	},
+	header: {
+		width: "90%"
+	},
+	headerText: {
+		fontSize: 20,
+		textAlign: "center",
+		color:"white",
+		fontWeight:'bold'
+	},
+	tileCam: {
+		width: "70%"
+	},
+	tileSearch: {
+		width:"70%"
+	},
 });
 
 export default Landing
