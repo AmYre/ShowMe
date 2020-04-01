@@ -1,0 +1,16 @@
+{
+    "prettier.tabWidth": 4,
+    "prettier.useTabs": true,
+    "editor.formatOnType": true,
+    "editor.mouseWheelZoom": true,
+    "html.format.indentInnerHtml": true,
+    "cSpell.ignoreWords": [
+        "appareil",
+        "ionicons",
+        "roboto",
+        "scanant",
+        "scanpic",
+        "scanplate"
+    ],
+    "git.ignoreLimitWarning": true
+}
