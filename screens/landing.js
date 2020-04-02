@@ -109,7 +109,8 @@ const Landing = props => {
 							body: JSON.stringify({
 								num: JSON.parse(result).ParsedResults[0].ParsedText,
 								long: location.coords['latitude'],
-								lat: location.coords['longitude']
+								lat: location.coords['longitude'],
+								date: new Date()
 							})
 						});
 						setPlate(JSON.parse(result).ParsedResults[0].ParsedText);
