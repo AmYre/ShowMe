@@ -1,8 +1,7 @@
 import React, {useState, useContext} from "react";
-import { StyleSheet, Text, View, Button, Alert, ActivityIndicator, Platform } from "react-native";
+import { StyleSheet, Text, View, Button, Alert, Image, ActivityIndicator, Platform } from "react-native";
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import MyHeaderButton from './MyHeaderButton';
-import { Image } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -98,24 +97,25 @@ const Landing = props => {
 
 			fetch("https://api.ocr.space/parse/image", requestOptions)
 				.then(response => response.text())
-				.then( async result =>  {
+				.then(async result => {
 					const location = await Location.getCurrentPositionAsync();
-					fetch('https://a-mir-pi.herokuapp.com/plates', {
-						method: 'post',
-						headers: {
-							'Accept': 'application/json, text/plain, */*',
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							num: JSON.parse(result).ParsedResults[0].ParsedText,
-							long: location.coords['latitude'],
-							lat: location.coords['longitude']
-						})
-					});
-					setPlate(JSON.parse(result).ParsedResults[0].ParsedText);
-					setIsLoading(false);
+						
+						fetch('https://a-mir-pi.herokuapp.com/plates', {
+							method: 'post',
+							headers: {
+								'Accept': 'application/json, text/plain, */*',
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({
+								num: JSON.parse(result).ParsedResults[0].ParsedText,
+								long: location.coords['latitude'],
+								lat: location.coords['longitude']
+							})
+						});
+						setPlate(JSON.parse(result).ParsedResults[0].ParsedText);
+						setIsLoading(false);
 				})
-				.catch(error => console.log('error', error));
+				.catch(err => console.log(err)); 
 				
 		};
 		

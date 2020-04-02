@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import { StyleSheet, Text, View, Image, Button, TextInput } from "react-native";
 
 const SearchPlate = props => {
 
@@ -16,7 +16,7 @@ const SearchPlate = props => {
 				style={{height: 60}}
 				onChangeText={inputVal => setInputVal(inputVal)}
 				defaultValue={inputVal}
-				placeholder="Tapez la plaque ici ex: DE-672-SK" />
+				placeholder="Tapez la plaque ici sans tirets - ex: DE672SK" />
 				<Button title="Lancez la recherche" onPress={search} />
 		</View>
 	);

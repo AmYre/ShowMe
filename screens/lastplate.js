@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import React, { useContext } from "react";
+import { StyleSheet, Text, View, Image, Button, ActivityIndicator } from "react-native";
 import { GlobalContext } from "../GlobalContext";
 
 const ShowLastPlate = props => {
@@ -16,29 +16,58 @@ const ShowLastPlate = props => {
 	const noButton = () => {
 		setPlate('');
 		setIsLoading(true);
+		setIsError(false);
+		setHeader('Assurez vous d\'isoler au maximum les chiffres de la plaque d\'éventuelles nuisances visuelles');
 		props.navigation.navigate('LandingScreen')
 	}
 
 	return (
 		<View style={styles.container}>
-			
-			<View style={styles.title}>
-				{isLoading ? (
-					<Text style={styles.onLoad}>Traitement de l'image en cours...</Text>) : (
-					<Text style={styles.subtext}>La plaque est-elle correct ?
-						
-					</Text>
-				)}
-			</View>
 
-			<View style={styles.plate}>
-				<View style={styles.leftPlate}></View>{!isLoading ? (<Text style={styles.plateNum}>{plate}</Text>) : (<Text style={styles.plateNum}>...</Text>)}<View style={styles.rightPlate}></View>
-			</View>
+			{isError ? (
+				<View style={styles.container}>
+					<View style={styles.title}>
+						<Text style={styles.subtext}>Désolé, nous n'avons pas pu traiter votre photo correctement.
+						Veuillez réessayer.</Text>
+					</View>
+
+					<View style={styles.img}>
+						<Image source={require('../assets/error.png')} style={{ width: 400, height: 400 }} />
+					</View>
+
+					<View style={styles.buttons}>
+						<View style={styles.noButton}><Button color="#de2828" title="Revenir" onPress={noButton} /></View>
+					</View>
+				</View>
+					
+			) : isLoading ? (
+				<View style={styles.container}>
+					<View style={styles.title}>
+						<Text style={styles.onLoad}>Traitement de l'image en cours...</Text>
+					</View>
+
+					<View>
+						<ActivityIndicator size="large" color="#4066C7" />
+					</View>
+				</View>
+			) : (
+						<View style={styles.container}>
+							<View style={styles.title}>
+								<Text style={styles.title}>La plaque est-elle correcte ?</Text>
+							</View>
 			
-			<View style={styles.buttons}>
-				<View style={styles.noButton}><Button color="#de2828" title="Reprendre" onPress={noButton}/></View>
-				<View style={styles.yesButton}><Button color="#5eba7d" title="Envoyer" onPress={yesButton}/></View>
-			</View>
+							<View style={styles.plate}>
+								<View style={styles.leftPlate}></View>
+								<Text style={styles.plateNum}>{plate}</Text>
+								<View style={styles.rightPlate}></View>
+							</View>
+
+							<View style={styles.buttons}>
+								<View style={styles.noButton}><Button color="grey" title="Revenir" onPress={noButton} /></View>
+								<View style={styles.yesButton}><Button color="#4066C7" title="Envoyer" onPress={yesButton} /></View>
+							</View>
+						</View>
+					)}
 				
 		</View>
 	);
@@ -51,15 +80,13 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "space-around"
 	},
-		title: {
-			textAlign: "center"
-		},
-			onLoad: {
-				textAlign: "center"
-			},
-			subtext: {
-				textAlign: "center",
-				fontSize: 18,
+	title: {
+			width:"90%",
+			textAlign: "center",
+			fontSize: 18,
+			color:"white",
+		fontWeight: "bold",
+			letterSpacing:2
 		},
 	plate: {
 		width: "80%",
@@ -71,7 +98,7 @@ const styles = StyleSheet.create({
 	leftPlate: {
 				flex: 1,
 				width: "10%",
-				backgroundColor: "blue"
+				backgroundColor: "#4066C7"
 			},
 	plateNum: {
 		flex: 8,
@@ -84,17 +111,19 @@ const styles = StyleSheet.create({
 			rightPlate: {
 				flex:1,
 				width: "10%",
-				backgroundColor: "blue"
+				backgroundColor: "#4066C7"
 			},
-		buttons: {
+	buttons: {
 			flexDirection: "row",
-			width:"80%"
+			width: "75%",
+			justifyContent:"space-between",
+			alignItems:"center"
 	},
 	noButton: {
-		flex: 1
+		width:150
 	},
 	yesButton: {
-		flex: 1
+		width:150
 }
 });
 
