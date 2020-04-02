@@ -1,4 +1,4 @@
-import React, {useState, useContext} from "react";
+import React, {useState, useContext, ocrSpaceApi } from "react";
 import { StyleSheet, Text, View, Button, Alert, Image, ActivityIndicator, Platform } from "react-native";
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import MyHeaderButton from './MyHeaderButton';
@@ -49,56 +49,48 @@ const Landing = props => {
 			props.navigation.navigate('LandingScreen');
 			return;
 		}
-		const imageFormat = await ImageManipulator.manipulateAsync(image.uri, [{ resize: {width:1000} }], {compress: 1});
-		const imageName = imageFormat.uri.split('/').pop();
-		const imagePath = FileSystem.documentDirectory + imageName;
+		const imageFormat = await ImageManipulator.manipulateAsync(image.uri, [{ resize: {width:1000} }], {compress: 1, base64: true});
+		let base64Img = `data:image/jpg;base64,${imageFormat.base64}`;
 
-		await FileSystem.moveAsync({
-			from: imageFormat.uri,
-			to: imagePath
+		let data = {
+			"file": base64Img,
+			"upload_preset": "elkl8a21",
+		  }
+
+		fetch('https://api.cloudinary.com/v1_1/amircloud/image/upload', {
+			body: JSON.stringify(data),
+			headers: {
+				'content-type': 'application/json'
+			},
+			method: 'POST'
 		})
+			.then(async response => {
+				let data = await response.json();
 
-		let timestamp = (Date.now() / 1000 | 0).toString();
-		let api_key = '335175835411183'
-		let api_secret = 'WbphncPPGQmZ1UR2oSWDC2kyRYo'
-		let cloud = 'amircloud'
-		let hash_string = 'timestamp=' + timestamp + api_secret
-		let digest = await Crypto.digestStringAsync(
-			Crypto.CryptoDigestAlgorithm.SHA1, hash_string
-		)
-		let signature = digest.toString()
-		let upload_url = 'https://api.cloudinary.com/v1_1/' + cloud + '/image/upload'
+				var myHeaders = new Headers();
+				myHeaders.append("apikey", "739498b88588957");
+				myHeaders.append('Accept', 'image / jpg');
+		
+				var formdata = new FormData();
+				formdata.append("language", "fre");
+				formdata.append("isOverlayRequired", "false");
+				formdata.append("filetype", "jpg");
+				formdata.append("url", data.url);
+				formdata.append("iscreatesearchablepdf", "false");
+				formdata.append("issearchablepdfhidetextlayer", "false");
+				formdata.append("OCREngine", "2");
 
-	  
-		let xhr = new XMLHttpRequest();
-		xhr.open('POST', upload_url);
+				var requestOptions = {
+					method: 'POST',
+					headers: myHeaders,
+					body: formdata,
+					redirect: 'follow'
+				};
 
-		xhr.onload = () => {
-
-			var myHeaders = new Headers();
-			myHeaders.append("apikey", "739498b88588957"); 
-			myHeaders.append('Accept', 'image / jpg');
-	
-			var formdata = new FormData();
-			formdata.append("language", "fre");
-			formdata.append("isOverlayRequired", "false");
-			formdata.append("filetype", "jpg");
-			formdata.append("url", JSON.parse(xhr.response).url);
-			formdata.append("iscreatesearchablepdf", "false");
-			formdata.append("issearchablepdfhidetextlayer", "false");
-			formdata.append("OCREngine", "2");
-	
-			var requestOptions = {
-			method: 'POST',
-			headers: myHeaders,
-			body: formdata,
-			redirect: 'follow'
-			};
-
-			fetch("https://api.ocr.space/parse/image", requestOptions)
-				.then(response => response.text())
-				.then(async result => {
-					const location = await Location.getCurrentPositionAsync();
+				fetch("https://api.ocr.space/parse/image", requestOptions)
+					.then(response => response.text())
+					.then(async result => {
+						const location = await Location.getCurrentPositionAsync();
 						
 						fetch('https://a-mir-pi.herokuapp.com/plates', {
 							method: 'post',
@@ -115,17 +107,10 @@ const Landing = props => {
 						});
 						setPlate(JSON.parse(result).ParsedResults[0].ParsedText);
 						setIsLoading(false);
-				})
-				.catch(err => console.log(err)); 
-				
-		};
+					})
+					.catch(err => console.log(err));
+			}).catch(err => console.log(err));
 		
-		let formData = new FormData();
-		formData.append('file', {uri: imagePath, type: 'image/png', name: 'upload.png'});
-		formData.append('timestamp', timestamp);
-		formData.append('api_key', api_key);
-		formData.append('signature', signature);
-		xhr.send(formData);
 		
 		const screen = await props.navigation.navigate('LastPlateScreen');
 	};
