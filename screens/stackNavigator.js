@@ -6,6 +6,7 @@ import Landing from './landing';
 import ScanPlate from './scanplate';
 import SearchPlate from './searchplate';
 import ShowLastPlate from './lastplate';
+import SearchResult from './searchresult';
 import Login from './login';
 import About from './about';
 
@@ -70,7 +71,17 @@ const StackNavigator = createStackNavigator({
                 backgroundColor: '#e2e5ec'
             }
         }
-    }
+    },
+    SearchResultScreen: {
+        screen: SearchResult,
+        navigationOptions: {
+            headerTitle: 'Résultat de votre recherche',
+            headerTintColor: 'white',
+            headerStyle: {
+                backgroundColor: '#e2e5ec'
+            }
+        }
+    },
 })
 
 export default createAppContainer(StackNavigator);

@@ -91,25 +91,31 @@ const Landing = props => {
 					.then(response => response.text())
 					.then(async result => {
 						const location = await Location.getCurrentPositionAsync();
+						if ((JSON.parse(result).ParsedResults[0].ParsedText == '')||
+						(JSON.parse(result).ParsedResults[0].ParsedText == undefined)) {
+							const screen = await props.navigation.navigate('LastPlateScreen');
+							setIsError(true)
+						} else {
+							fetch('https://a-mir-pi.herokuapp.com/plates', {
+								method: 'post',
+								headers: {
+									'Accept': 'application/json, text/plain, */*',
+									'Content-Type': 'application/json'
+								},
+								body: JSON.stringify({
+									num: JSON.parse(result).ParsedResults[0].ParsedText,
+									long: location.coords['latitude'],
+									lat: location.coords['longitude'],
+									date: new Date()
+								})
+							}).catch(err => { console.log(err); setIsError(true) });
+							setPlate(JSON.parse(result).ParsedResults[0].ParsedText);
+							setIsLoading(false);
+						}
+
+					}).catch(err => { console.log(err); setIsError(true) });
 						
-						fetch('https://a-mir-pi.herokuapp.com/plates', {
-							method: 'post',
-							headers: {
-								'Accept': 'application/json, text/plain, */*',
-								'Content-Type': 'application/json'
-							},
-							body: JSON.stringify({
-								num: JSON.parse(result).ParsedResults[0].ParsedText,
-								long: location.coords['latitude'],
-								lat: location.coords['longitude'],
-								date: new Date()
-							})
-						});
-						setPlate(JSON.parse(result).ParsedResults[0].ParsedText);
-						setIsLoading(false);
-					})
-					.catch(err => console.log(err));
-			}).catch(err => console.log(err));
+			}).catch(err => { console.log(err); setIsError(true) });
 		
 		
 		const screen = await props.navigation.navigate('LastPlateScreen');

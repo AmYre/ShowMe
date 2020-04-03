@@ -26,8 +26,8 @@ const ShowLastPlate = props => {
 
 			{isError ? (
 				<View style={styles.container}>
-					<View style={styles.title}>
-						<Text style={styles.subtext}>Désolé, nous n'avons pas pu traiter votre photo correctement.
+					<View style={styles.errorWrap}>
+						<Text style={styles.errorText}>Désolé, nous n'avons pas pu traiter votre photo correctement.
 						Veuillez réessayer.</Text>
 					</View>
 
@@ -124,6 +124,17 @@ const styles = StyleSheet.create({
 	},
 	yesButton: {
 		width:150
+	},errorWrap: {
+		flexDirection: "row",
+		width: "80%",
+		justifyContent:"space-between",
+		alignItems:"center"
+	},
+	errorText: {
+			textAlign: "center",
+			fontSize: 18,
+			color:"white",
+		fontWeight: "bold"
 }
 });
 

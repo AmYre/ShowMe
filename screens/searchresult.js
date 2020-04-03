@@ -1,26 +1,62 @@
 import React, { useState, useContext } from "react";
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import { StyleSheet, Text, View, Button, Image, ActivityIndicator } from "react-native";
 import { GlobalContext } from "../GlobalContext";
 
 const SearchResult = props => {
 
-	const [plate, setPlate, isLoading, setIsLoading, isError, setIsError, header, setHeader] = useContext(GlobalContext);
+	const [plate, setPlate, isLoading, setIsLoading, isError, setIsError, header, setHeader, result, setResult, date, setDate, long, setLong, lat, setLat, address, setAddress] = useContext(GlobalContext);
+
+	const backButton = () => {
+		setIsLoading(true);
+		setIsError(false);
+		props.navigation.navigate('SearchScreen')
+	}
 
 	return (
 		<View style={styles.container}>
-			
-			<View style={styles.title}>
-				{isLoading ? (
-					<Text style={styles.onLoad}>Recherche en cours...</Text>) : (
-					<Text style={styles.subtext}>Aucune correspondance existante
-						
-					</Text>
-				)}
-			</View>
 
-			<View style={styles.plate}>
-				<View style={styles.leftPlate}></View>{!isLoading ? (<Text style={styles.plateNum}>{plate}</Text>) : (<Text style={styles.plateNum}>...</Text>)}<View style={styles.rightPlate}></View>
-			</View>
+			{isError ? (
+				<View style={styles.container}>
+					<View style={styles.errorWrap}>
+						<Text style={styles.errorText}>Désolé, aucune correspondance n'a été trouvée pour votre recherche</Text>
+					</View>
+
+					<View style={styles.img}>
+						<Image source={require('../assets/error.png')} style={{ width: 400, height: 400 }} />
+					</View>
+
+					<View style={styles.buttons}>
+						<View style={styles.noButton}><Button color="#de2828" title="Revenir" onPress={backButton} /></View>
+					</View>
+				</View>
+			
+			) : isLoading ? (
+					<View style={styles.container}>
+						<Text style={styles.onLoad}>Recherche de correspondance en cours...</Text>
+						<ActivityIndicator size="large" color="#4066C7" />
+					</View>
+				) : (
+
+					<View style={styles.container}>
+						<View style={styles.title}>
+							<Text style={styles.title}>Une correspondance à été trouvée :</Text>
+						</View>
+		
+						<View style={styles.plate}>
+							<View style={styles.leftPlate}></View>
+							<Text style={styles.plateNum}>{result}</Text>
+							<View style={styles.rightPlate}></View>
+						</View>
+
+						<View>
+							<Text style={styles.address}><Text style={styles.title}>Localisation :</Text> {address}</Text>
+						</View>
+
+						<View style={styles.buttons}>
+							<View style={styles.noButton}><Button color="#4066C7" title="Revenir" onPress={backButton} /></View>
+						</View>
+					</View>
+			)}
 				
 		</View>
 	);
@@ -33,8 +69,12 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "space-around"
 	},
-		title: {
-			textAlign: "center"
+	title: {
+			width: "80%",
+			fontSize: 18,
+		textAlign: "center",
+		color:"white",
+		fontWeight:'bold'
 		},
 			onLoad: {
 				textAlign: "center"
@@ -77,6 +117,17 @@ const styles = StyleSheet.create({
 	},
 	yesButton: {
 		flex: 1
+},errorWrap: {
+	flexDirection: "row",
+	width: "80%",
+	justifyContent:"space-between",
+	alignItems:"center"
+},
+errorText: {
+		textAlign: "center",
+		fontSize: 18,
+		color:"white",
+	fontWeight: "bold"
 }
 });
 
